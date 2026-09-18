@@ -68,7 +68,12 @@ const json = JSON.stringify(data)
   .replace(/</g, '\\u003c')
   .replace(/\u2028/g, '\\u2028')
   .replace(/\u2029/g, '\\u2029');
-await writeFile(snapshotPath, 'window.__YauteshuEmbeddedCatalog=' + json + ';\n', 'utf8');
+await writeFile(
+  snapshotPath,
+  'window.__YauteshuEmbeddedCatalog=' + json + ';\n' +
+  'window.dispatchEvent(new CustomEvent("yauteshu:snapshot",{detail:window.__YauteshuEmbeddedCatalog}));\n',
+  'utf8'
+);
 console.log(
   'Saved ' + data.items.length + ' catalog item(s); reason: ' +
   (dueByForce ? 'forced' : 'scheduled') + '; interval: ' + refreshHours + 'h'
