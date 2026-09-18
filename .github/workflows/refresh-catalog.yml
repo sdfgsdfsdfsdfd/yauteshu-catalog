@@ -7,7 +7,7 @@ on:
       - ".github/workflows/refresh-catalog.yml"
       - "refresh-catalog.mjs"
   schedule:
-    - cron: "17 3 * * *"
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:
