@@ -214,6 +214,7 @@
         window.__receiveYauteshuCatalog=function(data){
           delete window.__receiveYauteshuCatalog;
           var selectedId=state.selected&&state.selected.id;
+          var selectedPhotoIndex=state.photoIndex;
           state.data=data||{};
           state.settings=state.data.settings||state.settings||{};
           writeCatalogCache(state.data);
@@ -222,7 +223,7 @@
           renderCatalog();
           if(selectedId&&el.detail.classList.contains('open')){
             var fresh=(state.data.items||[]).filter(function(item){return item.id===selectedId})[0];
-            if(fresh)openDetail(fresh);
+            if(fresh)openDetail(fresh,selectedPhotoIndex);
           }
           script.remove();
           clearTimeout(timer);
@@ -378,9 +379,9 @@
         });
       }
 
-      function openDetail(item){
+      function openDetail(item,photoIndex){
         state.selected=item;
-        state.photoIndex=0;
+        state.photoIndex=typeof photoIndex==='number'?photoIndex:0;
         el.detailId.textContent=boolSetting('DISPLAY_PRODUCT_ID',true)?item.id:'';
         el.detailStatus.textContent=item.statusLabel;
         el.detailStatus.className='detail-status '+item.status;
