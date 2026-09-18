@@ -20,11 +20,20 @@ const data = JSON.parse(body.slice(prefix.length, -2));
 if (!data || !Array.isArray(data.items)) throw new Error('Catalog has no items array');
 
 const settings = data.settings || {};
-const requestedHours = Number(String(settings.SNAPSHOT_REFRESH_HOURS || '24').replace(',', '.'));
+// Пока обновлённая версия Apps Script ещё не развёрнута, новые настройки
+// передаются через неиспользуемую витриной подпись скрытого статуса.
+const settingsBridge = String(settings.TEXT_STATUS_HIDDEN || '');
+const bridgeHours = settingsBridge.match(/(?:^|\|)snapshot_hours=([^|]+)/);
+const bridgeForce = settingsBridge.match(/(?:^|\|)force=([^|]*)/);
+const requestedHours = Number(String(
+  settings.SNAPSHOT_REFRESH_HOURS || (bridgeHours && bridgeHours[1]) || '24'
+).replace(',', '.'));
 const refreshHours = Number.isFinite(requestedHours)
   ? Math.min(720, Math.max(1, requestedHours))
   : 24;
-const forceToken = String(settings.SNAPSHOT_FORCE_TOKEN || '0');
+const forceToken = String(
+  settings.SNAPSHOT_FORCE_TOKEN ?? (bridgeForce && bridgeForce[1]) ?? '0'
+);
 
 let previous = null;
 try {
