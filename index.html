@@ -372,7 +372,7 @@
           var photoCount=boolSetting('DISPLAY_PHOTO_COUNT',true)&&photos.length>1?'<span class="photo-count">1/'+photos.length+'</span>':'';
           var productId=boolSetting('DISPLAY_PRODUCT_ID',true)?'<div class="card-id">'+esc(item.id)+'</div>':'';
           var price=boolSetting('DISPLAY_PRICE',true)?formatPrice(item.price):'';
-          card.innerHTML='<div class="card-image">'+(photo?'<img loading="lazy" decoding="async" src="'+attr(photo)+'" alt="'+attr(item.title)+'">':'<div class="placeholder">'+esc(setting('TEXT_PHOTO_PLACEHOLDER','Фотография\nскоро появится').replace(/\\n/g,'\n'))+'</div>')+badge+photoCount+'</div><div class="card-body">'+productId+'<h2 class="card-title">'+esc(item.title)+'</h2><div class="card-foot"><span>'+esc(price)+'</span><span class="card-arrow">↗</span></div></div>';
+          card.innerHTML='<div class="card-image">'+(photo?'<img loading="lazy" decoding="async" src="'+attr(sizedPhoto(photo,900))+'" alt="'+attr(item.title)+'">':'<div class="placeholder">'+esc(setting('TEXT_PHOTO_PLACEHOLDER','Фотография\nскоро появится').replace(/\\n/g,'\n'))+'</div>')+badge+photoCount+'</div><div class="card-body">'+productId+'<h2 class="card-title">'+esc(item.title)+'</h2><div class="card-foot"><span>'+esc(price)+'</span><span class="card-arrow">↗</span></div></div>';
           card.addEventListener('click',function(){openDetail(item)});
           el.catalog.appendChild(card);
         });
@@ -422,7 +422,7 @@
           var button=document.createElement('button');
           button.type='button';
           button.className='thumb'+(index===state.photoIndex?' active':'');
-          button.innerHTML='<img loading="lazy" decoding="async" src="'+attr(photo)+'" alt="'+attr(state.selected.title+', фото '+(index+1))+'">';
+          button.innerHTML='<img loading="lazy" decoding="async" src="'+attr(sizedPhoto(photo,240))+'" alt="'+attr(state.selected.title+', фото '+(index+1))+'">';
           button.addEventListener('click',function(){showPhoto(index)});
           el.thumbs.appendChild(button);
         });
@@ -447,12 +447,20 @@
         if(placeholder)placeholder.remove();
         state.photoIndex=(index+photos.length)%photos.length;
         el.hero.style.display='block';
-        el.hero.src=photos[state.photoIndex];
+        el.hero.src=sizedPhoto(photos[state.photoIndex],1600);
         el.hero.alt=state.selected.title+', фото '+(state.photoIndex+1);
+        [-1,1].forEach(function(delta){
+          var nearby=photos[(state.photoIndex+delta+photos.length)%photos.length];
+          if(nearby){var preload=new Image();preload.src=sizedPhoto(nearby,1600)}
+        });
         el.galleryCounter.textContent=(state.photoIndex+1)+' / '+photos.length;
         el.galleryCounter.style.display=photos.length>1?'block':'none';
         el.prev.style.display=el.next.style.display=photos.length>1?'grid':'none';
         Array.prototype.forEach.call(el.thumbs.children,function(thumb,i){thumb.classList.toggle('active',i===state.photoIndex)});
+      }
+
+      function sizedPhoto(value,width){
+        return String(value||'').replace(/=w\\d+(?=$|[?#])/i,'=w'+width);
       }
 
       function formatPrice(value){
