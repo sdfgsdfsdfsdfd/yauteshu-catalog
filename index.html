@@ -102,12 +102,18 @@
       function scheduleBackgroundLoads(){
         var start=function(){
           setTimeout(function(){
-            loadTelegramSdk();
+            if(isTelegramContext())loadTelegramSdk();
             loadCatalog();
           },0);
         };
         if(document.readyState==='complete')start();
         else window.addEventListener('load',start,{once:true});
+      }
+
+      function isTelegramContext(){
+        return /tgWebApp/i.test(location.search+location.hash)||
+          /Telegram/i.test(navigator.userAgent)||
+          !!window.TelegramWebviewProxy||!!window.TelegramWebviewProxyProto;
       }
 
       function loadTelegramSdk(){
