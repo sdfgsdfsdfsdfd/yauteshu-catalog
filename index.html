@@ -16,7 +16,7 @@
     .shell{max-width:var(--page-max-width);margin:auto;padding:calc(16px + var(--safe-top)) var(--page-padding) calc(32px + var(--safe-bottom))}
     .masthead{border:var(--border-width) solid var(--ink);background:var(--paper)}
     .masthead-main{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:14px}
-    .brand{margin:0;max-width:850px;font-size:clamp(var(--header-title-min),9vw,var(--header-title-max));line-height:.84;letter-spacing:-.065em;text-align:var(--header-align);text-transform:uppercase}
+    .brand{margin:0;max-width:850px;font-size:clamp(var(--header-title-min),9vw,var(--header-title-max));line-height:.84;letter-spacing:-.065em;text-align:var(--header-align);text-transform:var(--header-title-transform,none)}
     .counter{flex:none;border-left:var(--border-width) solid var(--ink);padding-left:10px;font:700 12px/1.2 var(--mono-font);text-transform:uppercase}
     .subtitle{margin:0;padding:10px 14px;border-top:var(--border-width) solid var(--ink);font:700 12px/1.25 var(--mono-font);letter-spacing:.03em;text-transform:uppercase}
     .controls{display:grid;grid-template-columns:1fr auto;gap:8px;margin:12px 0}
@@ -333,6 +333,7 @@
         setPx('STYLE_CONTACT_SHADOW_PX','--contact-shadow',5,0,16);
         setPx('STYLE_CARD_ACTIVE_SHIFT_PX','--card-shift',2,0,8);
         setRaw('--header-align',enumSetting('STYLE_HEADER_ALIGN',['left','center','right'],'left'));
+        setRaw('--header-title-transform',bridgeBoolSetting('title_uppercase',false)?'uppercase':'none');
 
         document.body.style.backgroundImage=boolSetting('DISPLAY_BACKGROUND_GRID',true)?'linear-gradient(rgba(17,17,15,.035) 1px,transparent 1px)':'none';
         el.counterLabel.textContent=setting('TEXT_COUNTER_LABEL','КАТАЛОГ');
@@ -498,6 +499,16 @@
       }
       function boolSetting(key,fallback){
         var raw=setting(key,fallback?'yes':'no').trim().toLowerCase();
+        return ['yes','да','true','1','on'].indexOf(raw)!==-1;
+      }
+      function bridgeSetting(key,fallback){
+        var parts=setting('TEXT_STATUS_HIDDEN','').split('|');
+        var prefix=String(key)+'=';
+        for(var i=0;i<parts.length;i++)if(parts[i].indexOf(prefix)===0)return parts[i].slice(prefix.length);
+        return String(fallback==null?'':fallback);
+      }
+      function bridgeBoolSetting(key,fallback){
+        var raw=bridgeSetting(key,fallback?'true':'false').trim().toLowerCase();
         return ['yes','да','true','1','on'].indexOf(raw)!==-1;
       }
       function numberSetting(key,fallback,min,max){
