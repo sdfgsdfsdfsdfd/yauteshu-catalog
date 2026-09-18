@@ -77,9 +77,10 @@
       var SETTINGS_CACHE='yauteshu-catalog-settings-v2';
       var CATALOG_CACHE='yauteshu-catalog-data-v1';
       var cachedData=readCatalogCache();
+      var staticData=cachedData?null:readStaticCatalog();
       var tg=null;
       var telegramReady=false;
-      var state={data:cachedData,settings:(cachedData&&cachedData.settings)||readSettingsCache(),tab:'available',query:'',selected:null,photoIndex:0};
+      var state={data:cachedData||staticData,settings:(cachedData&&cachedData.settings)||readSettingsCache(),tab:'available',query:'',selected:null,photoIndex:0};
       var el={
         catalog:q('catalog'),search:q('search'),controls:q('controls'),aboutButton:q('aboutButton'),
         title:q('storeTitle'),subtitle:q('storeSubtitle'),counterBlock:q('counter'),counterLabel:q('counterLabel'),
@@ -96,8 +97,50 @@
       function q(id){return document.getElementById(id)}
       applyConfiguration();
       bind();
-      if(state.data){applyStore();renderCatalog()}
+      if(state.data){applyStore();staticData?bindStaticCards():renderCatalog()}
       scheduleBackgroundLoads();
+
+      function readStaticCatalog(){
+        var cards=Array.prototype.slice.call(document.querySelectorAll('#catalog .card'));
+        if(!cards.length)return null;
+        function username(link,fallback){
+          var match=String(link&&link.href||'').match(/t\.me\/([^/?#]+)/i);
+          return match?decodeURIComponent(match[1]):fallback;
+        }
+        return {
+          settings:readSettingsCache(),
+          store:{
+            title:q('storeTitle').textContent,
+            subtitle:q('storeSubtitle').textContent,
+            aboutText:q('aboutCopy').textContent,
+            contactUsername:username(q('contactButton'),'uteshuvas'),
+            channelUsername:username(q('channelLink'),'yauteshu')
+          },
+          items:cards.map(function(card,index){
+            var image=card.querySelector('img');
+            var price=card.querySelector('.card-foot span');
+            return {
+              id:(card.querySelector('.card-id')||{}).textContent||'ART-'+(index+1),
+              title:(card.querySelector('.card-title')||{}).textContent||'',
+              description:'',size:'',materials:'',year:'',
+              price:price?price.textContent:'',
+              status:'available',statusLabel:'В наличии',
+              photos:image?[image.src]:[]
+            };
+          })
+        };
+      }
+
+      function bindStaticCards(){
+        var items=state.data.items||[];
+        Array.prototype.forEach.call(el.catalog.querySelectorAll('.card'),function(card,index){
+          var id=items[index]&&items[index].id;
+          card.addEventListener('click',function(){
+            var current=(state.data.items||[]).filter(function(item){return item.id===id})[0]||items[index];
+            if(current)openDetail(current);
+          });
+        });
+      }
 
       function scheduleBackgroundLoads(){
         var start=function(){
@@ -168,12 +211,17 @@
         var hadData=!!state.data;
         window.__receiveYauteshuCatalog=function(data){
           delete window.__receiveYauteshuCatalog;
+          var selectedId=state.selected&&state.selected.id;
           state.data=data||{};
           state.settings=state.data.settings||state.settings||{};
           writeCatalogCache(state.data);
           writeSettingsCache(state.settings);
           applyStore();
           renderCatalog();
+          if(selectedId&&el.detail.classList.contains('open')){
+            var fresh=(state.data.items||[]).filter(function(item){return item.id===selectedId})[0];
+            if(fresh)openDetail(fresh);
+          }
           script.remove();
           clearTimeout(timer);
         };
