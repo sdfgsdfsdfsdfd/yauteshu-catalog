@@ -70,13 +70,15 @@
   <section class="overlay" id="aboutOverlay" role="dialog" aria-modal="true" aria-label="О магазине"><button class="about-close" id="aboutClose" type="button" aria-label="Закрыть">×</button><article class="about-card"><h2 id="aboutTitle">О
 магазине</h2><div class="about-copy" id="aboutCopy">Торг уместен! Не бойтесь предлагать свою цену. Доставка по РФ за счет покупателя: озон, вайлдберриз, яндекс, почта, сдэк</div><a class="about-link" id="aboutContact" target="_blank" rel="noopener" href="https://t.me/uteshuvas">Написать в Telegram →</a></article></section>
 
+  <script src="catalog-data.js"></script>
   <script>
     (function(){
       'use strict';
       var API_URL='https://script.google.com/macros/s/AKfycbz6RuW2FKhvGSHQG6Hynshw4lngNRzZ3xf7gqQr2B_MXHUoN5VS7B628OCfdGcBdkwfww/exec';
       var SETTINGS_CACHE='yauteshu-catalog-settings-v2';
       var CATALOG_CACHE='yauteshu-catalog-data-v1';
-      var cachedData=readCatalogCache();
+      var embeddedData=window.__YauteshuEmbeddedCatalog||null;
+      var cachedData=embeddedData||readCatalogCache();
       var staticData=cachedData?null:readStaticCatalog();
       var tg=null;
       var telegramReady=false;
