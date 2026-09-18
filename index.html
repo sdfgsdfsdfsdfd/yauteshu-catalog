@@ -78,7 +78,9 @@
       var SETTINGS_CACHE='yauteshu-catalog-settings-v2';
       var CATALOG_CACHE='yauteshu-catalog-data-v1';
       var embeddedData=window.__YauteshuEmbeddedCatalog||null;
-      var cachedData=embeddedData||readCatalogCache();
+      // Свежая версия из браузера важнее встроенного снимка: иначе при каждом
+      // открытии на несколько секунд возвращался старый текст.
+      var cachedData=readCatalogCache()||embeddedData;
       var staticData=cachedData?null:readStaticCatalog();
       var tg=null;
       var telegramReady=false;
