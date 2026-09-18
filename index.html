@@ -99,6 +99,9 @@
       function q(id){return document.getElementById(id)}
       applyConfiguration();
       bind();
+      window.addEventListener('yauteshu:snapshot',function(event){
+        if(event.detail)applyBackgroundCatalog(event.detail);
+      });
       if(state.data){applyStore();staticData?bindStaticCards():renderCatalog()}
       scheduleBackgroundLoads();
 
@@ -144,10 +147,34 @@
         });
       }
 
+      function applyBackgroundCatalog(data){
+        var selectedId=state.selected&&state.selected.id;
+        var selectedPhotoIndex=state.photoIndex;
+        state.data=data||{};
+        state.settings=state.data.settings||state.settings||{};
+        writeCatalogCache(state.data);
+        writeSettingsCache(state.settings);
+        applyStore();
+        renderCatalog();
+        if(selectedId&&el.detail.classList.contains('open')){
+          var fresh=(state.data.items||[]).filter(function(item){return item.id===selectedId})[0];
+          if(fresh)openDetail(fresh,selectedPhotoIndex);
+        }
+      }
+
+      function loadGithubSnapshot(){
+        var script=document.createElement('script');
+        script.async=true;
+        script.src='https://raw.githubusercontent.com/sdfgsdfsdfsdfd/yauteshu-catalog/main/catalog-data.js?_='+(Date.now());
+        script.onload=script.onerror=function(){script.remove()};
+        document.head.appendChild(script);
+      }
+
       function scheduleBackgroundLoads(){
         var start=function(){
           setTimeout(function(){
             if(isTelegramContext())loadTelegramSdk();
+            loadGithubSnapshot();
             loadCatalog();
           },0);
         };
@@ -213,18 +240,7 @@
         var hadData=!!state.data;
         window.__receiveYauteshuCatalog=function(data){
           delete window.__receiveYauteshuCatalog;
-          var selectedId=state.selected&&state.selected.id;
-          var selectedPhotoIndex=state.photoIndex;
-          state.data=data||{};
-          state.settings=state.data.settings||state.settings||{};
-          writeCatalogCache(state.data);
-          writeSettingsCache(state.settings);
-          applyStore();
-          renderCatalog();
-          if(selectedId&&el.detail.classList.contains('open')){
-            var fresh=(state.data.items||[]).filter(function(item){return item.id===selectedId})[0];
-            if(fresh)openDetail(fresh,selectedPhotoIndex);
-          }
+          applyBackgroundCatalog(data);
           script.remove();
           clearTimeout(timer);
         };
