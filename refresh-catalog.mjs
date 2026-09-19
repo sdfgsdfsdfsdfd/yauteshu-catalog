@@ -43,8 +43,9 @@ let previous = null;
 try {
   const source = (await readFile(snapshotPath, 'utf8')).trim();
   const marker = 'window.__YauteshuEmbeddedCatalog=';
-  if (source.startsWith(marker) && source.endsWith(';')) {
-    previous = JSON.parse(source.slice(marker.length, -1));
+  const snapshotLine = source.split(/\r?\n/, 1)[0].trim();
+  if (snapshotLine.startsWith(marker) && snapshotLine.endsWith(';')) {
+    previous = JSON.parse(snapshotLine.slice(marker.length, -1));
   }
 } catch (error) {
   if (error && error.code !== 'ENOENT') throw error;
