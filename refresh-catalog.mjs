@@ -16,7 +16,8 @@ if (!body.startsWith(prefix) || !body.endsWith(');')) {
   throw new Error('Unexpected catalog response');
 }
 
-const data = JSON.parse(body.slice(prefix.length, -2));
+const payload = body.slice(prefix.length, -2).trim().replace(/;\s*$/, '');
+const data = JSON.parse(payload);
 if (!data || !Array.isArray(data.items)) throw new Error('Catalog has no items array');
 
 const settings = data.settings || {};
