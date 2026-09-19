@@ -16,8 +16,11 @@ if (!body.startsWith(prefix) || !body.endsWith(');')) {
   throw new Error('Unexpected catalog response');
 }
 
-const payload = body.slice(prefix.length, -2).trim().replace(/;\s*$/, '');
-const data = JSON.parse(payload);
+const wrappedPayload = body.slice(prefix.length, -2).trim();
+const jsonStart = wrappedPayload.indexOf('{');
+const jsonEnd = wrappedPayload.lastIndexOf('}');
+if (jsonStart < 0 || jsonEnd < jsonStart) throw new Error('Catalog response has no JSON object');
+const data = JSON.parse(wrappedPayload.slice(jsonStart, jsonEnd + 1));
 if (!data || !Array.isArray(data.items)) throw new Error('Catalog has no items array');
 
 const settings = data.settings || {};
