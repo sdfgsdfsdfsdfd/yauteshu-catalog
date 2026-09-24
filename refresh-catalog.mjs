@@ -3,6 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 const api = 'https://script.google.com/macros/s/AKfycbz6RuW2FKhvGSHQG6Hynshw4lngNRzZ3xf7gqQr2B_MXHUoN5VS7B628OCfdGcBdkwfww/exec';
 const callback = '__yauteshuSnapshot';
 const snapshotPath = 'catalog-data.js';
+const appVersion = '20260924-pan4';
 
 const response = await fetch(api + '?callback=' + callback + '&_=' + Date.now(), {
   redirect: 'follow',
@@ -76,7 +77,11 @@ const json = JSON.stringify(data)
 await writeFile(
   snapshotPath,
   'window.__YauteshuEmbeddedCatalog=' + json + ';\n' +
-  'window.dispatchEvent(new CustomEvent("yauteshu:snapshot",{detail:window.__YauteshuEmbeddedCatalog}));\n',
+  'window.dispatchEvent(new CustomEvent("yauteshu:snapshot",{detail:window.__YauteshuEmbeddedCatalog}));\n' +
+  '(function(){var v=' + JSON.stringify(appVersion) +
+  ';if(document.documentElement.getAttribute("data-app-version")===v)return;' +
+  'try{var u=new URL(location.href);if(u.searchParams.get("appv")===v)return;' +
+  'u.searchParams.set("appv",v);location.replace(u.toString())}catch(e){}})();\n',
   'utf8'
 );
 console.log(
