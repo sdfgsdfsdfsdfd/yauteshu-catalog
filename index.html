@@ -71,7 +71,7 @@
 
   <section class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Полноэкранный просмотр фотографии">
     <div class="lightbox-viewport" id="lightboxViewport"><img class="lightbox-image" id="lightboxImage" alt=""></div>
-    <p class="lightbox-hint">Двойной клик или + — увеличить</p>
+    <p class="lightbox-hint">Тяните мышью или пальцем · колесо — двигать · Ctrl + колесо — масштаб</p>
     <button class="lightbox-button lightbox-close" id="lightboxClose" type="button" aria-label="Закрыть">×</button>
     <button class="lightbox-button lightbox-prev" id="lightboxPrev" type="button" aria-label="Предыдущее фото">‹</button>
     <button class="lightbox-button lightbox-next" id="lightboxNext" type="button" aria-label="Следующее фото">›</button>
@@ -174,7 +174,7 @@
         renderCatalog();
         if(selectedId&&el.detail.classList.contains('open')){
           var fresh=(state.data.items||[]).filter(function(item){return item.id===selectedId})[0];
-          if(fresh)openDetail(fresh,selectedPhotoIndex);
+          if(fresh)openDetail(fresh,selectedPhotoIndex,true);
         }
       }
 
@@ -248,7 +248,17 @@
         });
         el.lightboxViewport.addEventListener('wheel',function(event){
           event.preventDefault();
-          zoomLightbox(event.deltaY<0?1.2:1/1.2);
+          if(event.ctrlKey||event.metaKey){
+            zoomLightbox(event.deltaY<0?1.2:1/1.2);
+            return;
+          }
+          if(state.lightboxScale<=1.01)return;
+          if(event.shiftKey&&Math.abs(event.deltaX)<1)state.lightboxX-=event.deltaY;
+          else{
+            state.lightboxX-=event.deltaX;
+            state.lightboxY-=event.deltaY;
+          }
+          updateLightboxTransform();
         },{passive:false});
         bindLightboxGestures();
         [el.channel,el.contact,el.aboutContact].forEach(function(link){link.addEventListener('click',openTelegram)});
@@ -437,7 +447,7 @@
         });
       }
 
-      function openDetail(item,photoIndex){
+      function openDetail(item,photoIndex,preserveViewer){
         state.selected=item;
         state.photoIndex=typeof photoIndex==='number'?photoIndex:0;
         el.detailId.textContent=boolSetting('DISPLAY_PRODUCT_ID',true)?item.id:'';
@@ -469,7 +479,7 @@
           el.contact.href='https://t.me/'+cleanUsername((state.data.store||{}).contactUsername||setting('CONTACT_USERNAME','uteshuvas'));
         }
         renderThumbs();
-        showPhoto(0);
+        showPhoto(state.photoIndex,!!preserveViewer);
         openOverlay(el.detail);
       }
 
@@ -487,7 +497,7 @@
         });
       }
 
-      function showPhoto(index){
+      function showPhoto(index,preserveViewer){
         if(!state.selected)return;
         var photos=state.selected.photos||[];
         if(!photos.length){
@@ -516,7 +526,7 @@
         el.galleryCounter.style.display=photos.length>1?'block':'none';
         el.prev.style.display=el.next.style.display=photos.length>1?'grid':'none';
         Array.prototype.forEach.call(el.thumbs.children,function(thumb,i){thumb.classList.toggle('active',i===state.photoIndex)});
-        if(el.lightbox.classList.contains('open'))syncLightboxPhoto();
+        if(el.lightbox.classList.contains('open'))syncLightboxPhoto(!!preserveViewer);
       }
 
       function openLightbox(){
@@ -532,12 +542,12 @@
         syncLock();
       }
 
-      function syncLightboxPhoto(){
+      function syncLightboxPhoto(preservePosition){
         if(!state.selected)return;
         var photos=state.selected.photos||[];
         var photo=photos[state.photoIndex];
         if(!photo)return;
-        resetLightbox();
+        if(!preservePosition)resetLightbox();
         el.lightboxImage.src=sizedPhoto(photo,2400);
         el.lightboxImage.alt=state.selected.title+', фото '+(state.photoIndex+1);
         el.lightboxCounter.textContent=(state.photoIndex+1)+' / '+photos.length;
@@ -560,7 +570,20 @@
       }
 
       function updateLightboxTransform(){
+        clampLightboxPosition();
         el.lightboxImage.style.transform='translate3d('+state.lightboxX+'px,'+state.lightboxY+'px,0) scale('+state.lightboxScale+')';
+      }
+
+      function clampLightboxPosition(){
+        var width=el.lightboxViewport.clientWidth||window.innerWidth;
+        var height=el.lightboxViewport.clientHeight||window.innerHeight;
+        var naturalWidth=el.lightboxImage.naturalWidth||width;
+        var naturalHeight=el.lightboxImage.naturalHeight||height;
+        var fit=Math.min(width/naturalWidth,height/naturalHeight);
+        var maxX=Math.max(0,(naturalWidth*fit*state.lightboxScale-width)/2);
+        var maxY=Math.max(0,(naturalHeight*fit*state.lightboxScale-height)/2);
+        state.lightboxX=Math.max(-maxX,Math.min(maxX,state.lightboxX));
+        state.lightboxY=Math.max(-maxY,Math.min(maxY,state.lightboxY));
       }
 
       function bindLightboxGestures(){
@@ -569,6 +592,8 @@
         function list(){return Object.keys(pointers).map(function(id){return pointers[id]})}
         function distance(points){var dx=points[0].x-points[1].x;var dy=points[0].y-points[1].y;return Math.sqrt(dx*dx+dy*dy)}
         el.lightboxViewport.addEventListener('pointerdown',function(event){
+          if(event.pointerType==='mouse'&&event.button!==0)return;
+          event.preventDefault();
           pointers[event.pointerId]={x:event.clientX,y:event.clientY,startX:event.clientX,startY:event.clientY};
           try{el.lightboxViewport.setPointerCapture(event.pointerId)}catch(e){}
           var points=list();
@@ -578,6 +603,7 @@
         });
         el.lightboxViewport.addEventListener('pointermove',function(event){
           if(!pointers[event.pointerId]||!gesture)return;
+          event.preventDefault();
           pointers[event.pointerId].x=event.clientX;pointers[event.pointerId].y=event.clientY;
           var points=list();
           if(points.length>=2&&gesture.type==='pinch'){
