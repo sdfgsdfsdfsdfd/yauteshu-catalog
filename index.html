@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-app-version="20260924-pan5">
+<html lang="ru" data-app-version="20260925-soldtab1">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -27,7 +27,7 @@
     .search{height:44px;min-width:0;padding:0 12px;border:var(--border-width) solid var(--ink);border-radius:var(--button-radius);background:var(--paper);outline:none}
     .search:focus{box-shadow:inset 0 -4px 0 var(--accent)}
     .about-button{min-width:110px;border:var(--border-width) solid var(--ink);border-radius:var(--button-radius);background:var(--ink);color:var(--paper);font-weight:900;text-transform:uppercase}
-    .tabs{display:grid;grid-template-columns:1fr 1fr;margin-bottom:12px;border:var(--border-width) solid var(--ink)}
+    .tabs{display:grid;grid-template-columns:1fr;margin-bottom:12px;border:var(--border-width) solid var(--ink)}
     .tab{min-height:42px;padding:8px;border:0;background:transparent;font:700 12px/1 var(--mono-font);text-transform:uppercase}.tab+.tab{border-left:var(--border-width) solid var(--ink)}.tab.active{background:var(--accent);color:var(--button-text)}
     .grid{display:grid;grid-template-columns:repeat(var(--grid-cols-mobile),minmax(0,1fr));gap:var(--grid-gap)}
     .card{min-width:0;padding:0;border:var(--border-width) solid var(--ink);border-radius:var(--card-radius);background:var(--paper);text-align:left;overflow:hidden}.card:active{transform:translate(var(--card-shift),var(--card-shift))}
@@ -63,7 +63,7 @@
   <main class="shell">
     <header class="masthead"><div class="masthead-main"><h1 class="brand" id="storeTitle">Утешный магазин</h1><div class="counter" id="counter"><span id="counterLabel">КАТАЛОГ</span><br><span id="totalCount">1 РАБОТ</span></div></div><p class="subtitle" id="storeSubtitle">Работы на продажу</p></header>
     <div class="controls" id="controls" style="display: grid; grid-template-columns: 1fr auto;"><input class="search" id="search" type="search" placeholder="Найти работу" aria-label="Найти работу"><button class="about-button" id="aboutButton" type="button">О магазине</button></div>
-    <nav class="tabs" id="tabs" aria-label="Разделы каталога"><button class="tab active" type="button" data-tab="available"><span id="availableTabLabel">В наличии</span> <span id="availableCount">· 1</span></button><button class="tab" type="button" data-tab="sold"><span id="soldTabLabel">Продано</span> <span id="soldCount">· 0</span></button></nav>
+    <nav class="tabs" id="tabs" aria-label="Разделы каталога"><button class="tab active" type="button" data-tab="available"><span id="availableTabLabel">В наличии</span> <span id="availableCount">· 1</span></button><button class="tab" id="soldTab" type="button" data-tab="sold" style="display:none"><span id="soldTabLabel">Продано</span> <span id="soldCount">· 0</span></button></nav>
     <section class="grid" id="catalog" aria-live="polite"><button class="card" type="button"><div class="card-image"><img loading="lazy" decoding="async" src="https://lh3.googleusercontent.com/d/1gkulaPMCJhq7HfM59s6VfnPgPo47wVL_=w2000" alt="тест"><span class="photo-count">1/6</span></div><div class="card-body"><div class="card-id">ART-001</div><h2 class="card-title">тест</h2><div class="card-foot"><span>5&nbsp;000 р.</span><span class="card-arrow">↗</span></div></div></button></section>
     <footer class="footer" id="footer" style="display: flex;"><span id="copyright">© Илья Утешитель</span><a id="channelLink" target="_blank" rel="noopener" href="https://t.me/yauteshu">Telegram-канал →</a></footer>
   </main>
@@ -103,7 +103,7 @@
       var telegramReady=false;
       var state={data:cachedData||staticData,settings:(cachedData&&cachedData.settings)||readSettingsCache(),tab:'available',query:'',selected:null,photoIndex:0,lightboxScale:1,lightboxX:0,lightboxY:0};
       var el={
-        catalog:q('catalog'),search:q('search'),controls:q('controls'),aboutButton:q('aboutButton'),
+        catalog:q('catalog'),search:q('search'),controls:q('controls'),aboutButton:q('aboutButton'),tabs:q('tabs'),soldTab:q('soldTab'),
         title:q('storeTitle'),subtitle:q('storeSubtitle'),counterBlock:q('counter'),counterLabel:q('counterLabel'),
         total:q('totalCount'),available:q('availableCount'),sold:q('soldCount'),availableLabel:q('availableTabLabel'),
         soldLabel:q('soldTabLabel'),channel:q('channelLink'),footer:q('footer'),copyright:q('copyright'),
@@ -413,10 +413,19 @@
 
         var showSearch=boolSetting('DISPLAY_SEARCH',true);
         var showAbout=boolSetting('DISPLAY_ABOUT_BUTTON',true);
+        var showSoldTab=Object.prototype.hasOwnProperty.call(state.settings||{},'DISPLAY_SOLD_TAB')
+          ?boolSetting('DISPLAY_SOLD_TAB',false)
+          :bridgeBoolSetting('sold_tab',false);
         el.search.style.display=showSearch?'':'none';
         el.aboutButton.style.display=showAbout?'':'none';
         el.controls.style.display=showSearch||showAbout?'grid':'none';
         el.controls.style.gridTemplateColumns=showSearch&&showAbout?'1fr auto':'1fr';
+        el.soldTab.style.display=showSoldTab?'':'none';
+        el.tabs.style.gridTemplateColumns=showSoldTab?'1fr 1fr':'1fr';
+        if(!showSoldTab&&state.tab==='sold'){
+          state.tab='available';
+          document.querySelectorAll('.tab').forEach(function(item){item.classList.toggle('active',item.dataset.tab==='available')});
+        }
         el.counterBlock.style.display=boolSetting('DISPLAY_COUNTER',true)?'':'none';
         el.footer.style.display=boolSetting('DISPLAY_FOOTER',true)?'flex':'none';
         el.channel.style.display=boolSetting('DISPLAY_CHANNEL_LINK',true)?'':'none';
