@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2311110f'/%3E%3Cpath d='M12 10v29c0 12 8 17 20 17s20-5 20-17V10H39v29c0 4-2 6-7 6s-7-2-7-6V10z' fill='%23d52b1e'/%3E%3C/svg%3E">
   
   <style>
-    :root{--paper:#f0ede4;--ink:#11110f;--muted:#6b6962;--accent:#d52b1e;--yellow:#ffd85a;--image-bg:#d4d0c5;--placeholder-light:#ddd9cf;--placeholder-dark:#d2cec3;--button-text:#fff;--disabled-bg:#aaa69c;--disabled-text:#484641;--body-font:Arial,Helvetica,sans-serif;--mono-font:monospace;--page-max-width:1180px;--page-padding:12px;--border-width:2px;--card-radius:0px;--button-radius:0px;--grid-gap:10px;--grid-cols-mobile:2;--grid-cols-tablet:3;--grid-cols-desktop:4;--card-ratio:4 / 5;--card-image-fit:cover;--detail-image-fit:contain;--header-title-min:31px;--header-title-max:78px;--card-title-min:16px;--card-title-max:21px;--detail-title-min:35px;--detail-title-max:78px;--body-size:16px;--body-line:1.45;--background-grid-size:40px;--contact-shadow:5px;--card-shift:2px;--header-align:left;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+    :root{--paper:#f0ede4;--ink:#11110f;--muted:#6b6962;--accent:#d52b1e;--yellow:#ffd85a;--image-bg:#d4d0c5;--placeholder-light:#ddd9cf;--placeholder-dark:#d2cec3;--button-text:#fff;--disabled-bg:#aaa69c;--disabled-text:#484641;--body-font:Arial,Helvetica,sans-serif;--mono-font:monospace;--page-max-width:1180px;--page-padding:12px;--border-width:2px;--card-radius:0px;--button-radius:0px;--grid-gap:10px;--grid-cols-mobile:2;--grid-cols-tablet:3;--grid-cols-desktop:4;--card-ratio:4 / 5;--card-image-fit:cover;--detail-image-fit:contain;--header-title-min:31px;--header-title-max:78px;--card-title-min:16px;--card-title-max:21px;--detail-title-min:35px;--detail-title-max:78px;--about-title-size:72px;--about-text-size:20px;--body-size:16px;--body-line:1.45;--background-grid-size:40px;--contact-shadow:5px;--card-shift:2px;--header-align:left;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
     *{box-sizing:border-box}
     html{background:var(--paper);color:var(--ink)}
     body{margin:0;min-width:280px;min-height:100vh;background:linear-gradient(rgba(17,17,15,.035) 1px,transparent 1px),var(--paper);background-size:100% var(--background-grid-size);font-family:var(--body-font);font-size:var(--body-size);line-height:var(--body-line);-webkit-font-smoothing:antialiased}
@@ -51,7 +51,7 @@
     .detail-title{margin:0;font-size:clamp(var(--detail-title-min),11vw,var(--detail-title-max));line-height:.85;letter-spacing:-.06em;text-transform:uppercase;overflow-wrap:anywhere}.detail-price{margin:16px 0;color:var(--accent);font:800 clamp(21px,6vw,34px)/1 var(--mono-font)}
     .facts{margin:18px 0;border-top:var(--border-width) solid var(--ink)}.fact{display:grid;grid-template-columns:100px 1fr;gap:10px;padding:9px 0;border-bottom:var(--border-width) solid var(--ink)}.fact-key{color:var(--muted);font:700 11px/1.2 var(--mono-font);text-transform:uppercase}.fact-value{font-size:15px;line-height:1.3}.description{white-space:pre-line;font-size:var(--body-size);line-height:var(--body-line)}
     .contact{display:block;width:100%;margin-top:22px;padding:16px;border:var(--border-width) solid var(--ink);border-radius:var(--button-radius);background:var(--accent);color:var(--button-text);font-weight:900;text-align:center;text-decoration:none;text-transform:uppercase;box-shadow:var(--contact-shadow) var(--contact-shadow) 0 var(--ink)}.contact:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}.contact.disabled{background:var(--disabled-bg);color:var(--disabled-text);pointer-events:none;box-shadow:none}
-    .about-card{min-height:100%;max-width:760px;margin:auto;padding:calc(72px + var(--safe-top)) 18px calc(28px + var(--safe-bottom))}.about-card h2{margin:0 0 24px;white-space:pre-line;font-size:clamp(49px,16vw,108px);line-height:.8;letter-spacing:-.07em;text-transform:uppercase}.about-copy{white-space:pre-line;font-size:clamp(18px,5vw,26px);line-height:1.3}.about-close{position:fixed;top:calc(10px + var(--safe-top));right:12px;z-index:4;width:44px;height:44px;border:var(--border-width) solid var(--ink);border-radius:var(--button-radius);background:var(--ink);color:var(--button-text);font-size:25px}.about-link{display:inline-block;margin-top:25px;padding:13px 15px;border:var(--border-width) solid var(--ink);border-radius:var(--button-radius);background:var(--accent);color:var(--button-text);font-weight:900;text-decoration:none;text-transform:uppercase}
+    .about-card{min-height:100%;max-width:760px;margin:auto;padding:calc(72px + var(--safe-top)) 18px calc(28px + var(--safe-bottom))}.about-card h2{margin:0 0 24px;white-space:pre-line;font-size:var(--about-title-size);line-height:.8;letter-spacing:-.07em;text-transform:uppercase}.about-copy{white-space:pre-line;font-size:var(--about-text-size);line-height:1.3}.about-close{position:fixed;top:calc(10px + var(--safe-top));right:12px;z-index:4;width:44px;height:44px;border:var(--border-width) solid var(--ink);border-radius:var(--button-radius);background:var(--ink);color:var(--button-text);font-size:25px}.about-link{display:inline-block;margin-top:25px;padding:13px 15px;border:var(--border-width) solid var(--ink);border-radius:var(--button-radius);background:var(--accent);color:var(--button-text);font-weight:900;text-decoration:none;text-transform:uppercase}
     @media(min-width:720px){.shell{padding-left:calc(var(--page-padding) * 2);padding-right:calc(var(--page-padding) * 2)}.grid{grid-template-columns:repeat(var(--grid-cols-tablet),minmax(0,1fr))}.detail-grid{grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr)}.gallery-column{border-right:var(--border-width) solid var(--ink)}.gallery{border-bottom:0}.detail-info{position:sticky;top:calc(52px + var(--safe-top));align-self:start;max-height:calc(100vh - 52px - var(--safe-top));overflow-y:auto;padding:26px}}
     @media(min-width:1040px){.grid{grid-template-columns:repeat(var(--grid-cols-desktop),minmax(0,1fr))}}
     @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -382,6 +382,8 @@
         setPx('STYLE_CARD_TITLE_MAX_PX','--card-title-max',21,14,60);
         setPx('STYLE_DETAIL_TITLE_MIN_PX','--detail-title-min',35,24,100);
         setPx('STYLE_DETAIL_TITLE_MAX_PX','--detail-title-max',78,36,180);
+        setRaw('--about-text-size',bridgedNumberSetting('STYLE_ABOUT_TEXT_SIZE_PX','about_text_px',20,12,48)+'px');
+        setRaw('--about-title-size',bridgedNumberSetting('STYLE_ABOUT_TITLE_SIZE_PX','about_title_px',72,24,140)+'px');
         setPx('STYLE_BODY_FONT_SIZE_PX','--body-size',16,14,28);
         setNumber('STYLE_LINE_HEIGHT','--body-line',1.45,1,2);
         setPx('STYLE_BACKGROUND_GRID_SIZE_PX','--background-grid-size',40,12,160);
@@ -679,6 +681,14 @@
       }
       function numberSetting(key,fallback,min,max){
         var number=Number(setting(key,fallback).replace(',','.'));
+        if(!Number.isFinite(number))number=fallback;
+        return Math.min(max,Math.max(min,number));
+      }
+      function bridgedNumberSetting(settingKey,bridgeKey,fallback,min,max){
+        var raw=state.settings&&Object.prototype.hasOwnProperty.call(state.settings,settingKey)
+          ?setting(settingKey,fallback)
+          :bridgeSetting(bridgeKey,fallback);
+        var number=Number(String(raw).replace(',','.'));
         if(!Number.isFinite(number))number=fallback;
         return Math.min(max,Math.max(min,number));
       }
