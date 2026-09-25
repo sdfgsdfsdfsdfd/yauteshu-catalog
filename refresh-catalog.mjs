@@ -3,7 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 const api = 'https://script.google.com/macros/s/AKfycbz6RuW2FKhvGSHQG6Hynshw4lngNRzZ3xf7gqQr2B_MXHUoN5VS7B628OCfdGcBdkwfww/exec';
 const callback = '__yauteshuSnapshot';
 const snapshotPath = 'catalog-data.js';
-const appVersion = '20260925-soldtab1';
+const appVersion = '20260924-pan5';
 
 const response = await fetch(api + '?callback=' + callback + '&_=' + Date.now(), {
   redirect: 'follow',
